@@ -79,9 +79,27 @@ def disparity_to_depth(
 target = 0
 # output_dir = '/HDD/etc/outputs/retinify/rectification/1/outputs'
 output_dir = '/HDD/etc/outputs/intelrealsense/retinify'
-stereo_calib = np.load('/HDD/etc/outputs/retinify/cal_results/2/stereo_calib.npz')
+# stereo_calib = np.load('/HDD/etc/outputs/retinify/cal_results/2/stereo_calib.npz')
+stereo_calib = np.load('/HDD/etc/outputs/intelrealsense/rectified/stereo_calib.npz')
 K1 = stereo_calib['K1']
+'''
+array([[598.13397217,   0.        , 317.66104126],
+       [  0.        , 598.13397217, 248.04055786],
+       [  0.        ,   0.        ,   1.        ]])
+array([[2.36780382e+03, 0.00000000e+00, 1.25090950e+03],
+       [0.00000000e+00, 2.36685016e+03, 9.82725816e+02],
+       [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
+'''
+
 T = stereo_calib['T']
+'''
+array([[-0.05499389],
+       [ 0.00030266],
+       [ 0.0012008 ]])
+array([[ 5.67419399e+01],
+[ 5.20661472e+00],
+[-5.01766976e-02]])
+'''
 
 # 1) disparity 로드 (Retinify가 float32 px로 준다고 가정)
 # disp = cv.imread("retinify_disparity.exr", cv.IMREAD_UNCHANGED)  # EXR/PNG/… 어떤 포맷이든 로드
@@ -113,8 +131,9 @@ with open(disparity_file, 'rb') as f:
 fx = float(K1[0,0])
 # fx = 598.1339721679688
 
-baseline_mm = np.linalg.norm(T)
-baseline_m = baseline_mm / 1000.0
+baseline_m = np.linalg.norm(T)
+# baseline_m = baseline_mm / 1000.0
+# 0.05698033958511742
 
 depth_m = disparity_to_depth(disparity_map, fx, baseline_m, disp_scale=1.0, min_disp=0.1)
 
